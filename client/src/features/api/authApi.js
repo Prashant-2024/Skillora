@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { userLoggedIn } from "../authSlice";
 
-const USER_API = "http://localhost/8000/api/v1/user/";
+const USER_API = "http://localhost:8000/api/v1/user/";
 
 const authApi = createApi({
   // name for the api slice
@@ -13,7 +14,7 @@ const authApi = createApi({
   // define all the endpoints for the Api
   // mutation - post & put & delete request
   // query - get request
-  endpoints: (builder) => {
+  endpoints: (builder) => ({
     // register Api
     registerUser: builder.mutation({
       query: (formData) => ({
@@ -21,7 +22,7 @@ const authApi = createApi({
         method: "POST",
         body: formData,
       }),
-    });
+    }),
     // login Api
     loginUser: builder.mutation({
       query: (formData) => ({
@@ -39,8 +40,8 @@ const authApi = createApi({
           console.log(error);
         }
       },
-    });
-  },
+    }),
+  }),
 });
 
 export { authApi };

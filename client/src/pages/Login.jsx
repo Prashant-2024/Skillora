@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +15,8 @@ import {
   useLoginUserMutation,
   useRegisterUserMutation,
 } from "@/features/api/authApi";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [loginInput, setLoginInput] = useState({
@@ -33,7 +35,7 @@ const Login = () => {
     {
       data: registerData,
       error: registerError,
-      isLoading: registerLoading,
+      isLoading: registerIsLoading,
       isSuccess: registerIsSuccess,
     },
   ] = useRegisterUserMutation();
@@ -42,7 +44,7 @@ const Login = () => {
     {
       data: loginData,
       error: loginError,
-      isLoading: loginLoading,
+      isLoading: loginIsLoading,
       isSuccess: loginIsSuccess,
     },
   ] = useLoginUserMutation();
@@ -56,10 +58,37 @@ const Login = () => {
     }
   };
 
-  const handleAuthentication = (type) => {
+  const handleAuthentication = async (type) => {
     const inputData = type === "signup" ? signupInput : loginInput;
     console.log(inputData);
+
+    const action = type === "signup" ? registerUser : loginUser;
+    await action(inputData);
   };
+
+  useEffect(() => {
+    if (registerIsSuccess && registerData) {
+      toast.success(
+        registerData.message || "Account Created Successfully. Enjoy"
+      );
+    }
+    if (registerError) {
+      toast.error(registerData.data.message || "Signup Failed. Try again");
+    }
+    if (loginIsSuccess && loginData) {
+      toast.success(loginData.message || "Login Success. Welcome to Skillora!");
+    }
+    if (loginError) {
+      toast.error(loginData.data.message || "Login Failed. Try again");
+    }
+  }, [
+    loginIsLoading,
+    registerIsLoading,
+    loginData,
+    registerData,
+    loginError,
+    registerError,
+  ]);
 
   return (
     <div className="flex items-center justify-center">
@@ -85,7 +114,7 @@ const Login = () => {
                   value={signupInput.name}
                   type="text"
                   placeholder="Eg. rohan"
-                  required="true"
+                  required={true}
                 />
               </div>
               <div className="space-y-1">
@@ -96,7 +125,7 @@ const Login = () => {
                   value={signupInput.email}
                   type="email"
                   placeholder="Eg. xyz@gmail.com"
-                  required="true"
+                  required={true}
                 />
               </div>
               <div className="space-y-1">
@@ -107,13 +136,16 @@ const Login = () => {
                   value={signupInput.password}
                   type="password"
                   placeholder="Eg. password123"
-                  required="true"
+                  required={true}
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleAuthentication("signup")}>
-                Create Account
+              <Button
+                onClick={() => handleAuthentication("signup")}
+                disabled={registerIsLoading}
+              >
+                {registerIsLoading ? <Loader2 /> : "Create Account"}
               </Button>
             </CardFooter>
           </Card>
@@ -135,7 +167,7 @@ const Login = () => {
                   value={loginInput.email}
                   type="email"
                   placeholder="Eg. xyz@gmail.com"
-                  required="true"
+                  required={true}
                 />
               </div>
               <div className="space-y-1">
@@ -146,13 +178,16 @@ const Login = () => {
                   value={loginInput.password}
                   type="password"
                   placeholder="Eg. password123"
-                  required="true"
+                  required={true}
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleAuthentication("login")}>
-                Get Started
+              <Button
+                onClick={() => handleAuthentication("login")}
+                disabled={loginIsLoading}
+              >
+                {loginIsLoading ? <Loader2 /> : "Get Started"}
               </Button>
             </CardFooter>
           </Card>
