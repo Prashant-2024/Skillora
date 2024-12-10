@@ -17,6 +17,7 @@ import {
 } from "@/features/api/authApi";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [loginInput, setLoginInput] = useState({
@@ -49,6 +50,8 @@ const Login = () => {
     },
   ] = useLoginUserMutation();
 
+  const navigate = useNavigate();
+
   const onChangeInputHandler = (e, type) => {
     const { name, value } = e.target;
     if (type === "signup") {
@@ -77,6 +80,7 @@ const Login = () => {
     }
     if (loginIsSuccess && loginData) {
       toast.success(loginData.message || "Login Success. Welcome to Skillora!");
+      navigate("/");
     }
     if (loginError) {
       toast.error(loginData.data.message || "Login Failed. Try again");
